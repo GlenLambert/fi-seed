@@ -1,7 +1,7 @@
 {
-  "name": "fi-seed",
-  "title": "Fi Seed",
-  "description": "A boilerplate for applications with Node.js + Express + MongoDB on the backend and AngularJS on the frontend (aka MEAN).",
+  "name": "my-test",
+  "title": "Learning seed",
+  "description": "Just training",
   "color": "#b8dc3b",
   "version": "3.3.0",
   "stage": "stable",
@@ -28,6 +28,7 @@
     "base64url": "^2.0.0",
     "bcrypt": "^1.0.2",
     "body-parser": "^1.15.0",
+    "chance": "^1.0.8",
     "colors": "^1.1.2",
     "compression": "^1.6.1",
     "connect-redis": "^3.0.2",
