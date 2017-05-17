@@ -56,6 +56,11 @@ module.exports = (Schema) => {
       enum: [
         ROLE_ADMIN, ROLE_USER
       ]
+    },
+
+    profilesCount: {
+      type: Number,
+      default: 0
     }
 
   }, {

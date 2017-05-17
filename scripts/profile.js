@@ -81,7 +81,8 @@ connectionScript().then(() => {
   })
 
   .then((profile) => {
-    smartLog(profile.toObject());
+    smartLog('hash: ', profile.hash);
+    smartLog('user name: ', profile.user.name);
   });
 })
 .catch((err) => {
