@@ -60,7 +60,7 @@ const rdmEmail = randomAlpha(10) + '@mailinator.com';
 const rdmName = randomName();
 
 connectionScript().then(() => {
-  smartLog('\nDoing stuff...');
+  //smartLog('\nDoing stuff...');
 
   return User.create({
     name: rdmName,
@@ -81,8 +81,8 @@ connectionScript().then(() => {
   })
 
   .then((profile) => {
-    smartLog('hash: ', profile.hash);
-    smartLog('user name: ', profile.user.name);
+    //smartLog('hash: ', profile.hash);
+    //smartLog('user name: ', profile.user.name);
   });
 })
 .catch((err) => {

@@ -102,6 +102,11 @@ module.exports = (Schema) => {
     }).catch(next);
   }
 
+  function preUpdate(next) {
+    console.dir(this, {colors: true, depth: 1});
+    next();
+  }
+
   /**
    * Find a user by it's email (Promised).
    *
@@ -117,6 +122,7 @@ module.exports = (Schema) => {
   schema.pre('findOneAndUpdate', preUpdatePassword);
   schema.pre('update', preUpdatePassword);
   schema.pre('save', preSavePassword);
+  schema.pre('update', preUpdate);
 
   schema.static('findByEmail', findByEmail);
 

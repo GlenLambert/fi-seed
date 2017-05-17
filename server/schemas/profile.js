@@ -33,26 +33,24 @@ module.exports = (Schema) => {
   function preValidateHash(next) {
     if (this.isNew) {
       this.hash = this.email + '@' + this.user;
+      console.dir(this, {colors: true, depth: 1});
     }
     next();
   }
 
   function postSaveUserCount(doc, next) {
     mongoose.model('user').update({_id: doc.user}, { $inc: {profilesCount: 1}})
-    .then((raw) => {
-      console.dir(raw, {colors: true, depth: 2});
+    .then(() => {
       next();
     })
-    /*.findOne().where('_id').equals(doc.user)
-      .then((user) => {
-        user.set('profilesCount', 1);
-        user.save().then(() => {
-          next();
-        });
-      })*/
-      .catch((err) => {
-        next(err);
-      });
+    .catch((err) => {
+      next(err);
+    });
+  }
+
+  function preUpdate(next) {
+    console.dir(this, {colors: true, depth: 1});
+    next();
   }
 
   schema.path('email').validate((val) => {
@@ -60,6 +58,8 @@ module.exports = (Schema) => {
   }, ':c el email está malo');
 
   schema.pre('validate', preValidateHash);
+  schema.pre('update', preUpdate);
+  schema.pre('findOneAndUpdate', preUpdate);
 
   schema.post('save', postSaveUserCount);
 
