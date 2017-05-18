@@ -113,7 +113,7 @@ module.exports = (Schema) => {
   }
 
   function findProfiles(user) {
-    return this.model('profile').findAllByUser(user).populate('profiles');
+    return this.model('profile').findAllByUser(user).populate('profiles'); //TOASK: is this shit working? does it go here?? HALP!! (CONTEXT CONFUSION)
   }
 
   function hasProfiles() {
@@ -152,8 +152,8 @@ module.exports = (Schema) => {
   schema.static('findByEmail', findByEmail);
   schema.static('findProfiles', findProfiles);
 
-  schema.virtual('hasprofiles').get(hasProfiles);
-  schema.virtual('hasprofiles').get(hasManyProfiles);
+  schema.virtual('hasprofiles').get(hasProfiles);     //WRONGLY CODED
+  schema.virtual('hasprofiles').get(hasManyProfiles); //BAD BAD SHIT
 
   return schema;
 
