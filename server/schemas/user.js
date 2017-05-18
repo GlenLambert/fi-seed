@@ -2,6 +2,7 @@
 
 const CONSTS = require('fi-consts');
 
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const is = require('fi-is');
 
@@ -58,6 +59,10 @@ module.exports = (Schema) => {
       ]
     },
 
+    profiles: {
+      type: [Object]
+    },
+
     profilesCount: {
       type: Number,
       default: 0
@@ -103,8 +108,28 @@ module.exports = (Schema) => {
   }
 
   function preUpdate(next) {
-    console.dir(this, {colors: true, depth: 1});
+    //console.dir(this, {colors: true, depth: 1});
     next();
+  }
+
+  function findProfiles(user) {
+    return this.model('profile').findAllByUser(user).populate('profiles');
+  }
+
+  function hasProfiles() {
+    if(findProfiles().count()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function hasManyProfiles() {
+    if(findProfiles().count() > 1) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -125,6 +150,10 @@ module.exports = (Schema) => {
   schema.pre('update', preUpdate);
 
   schema.static('findByEmail', findByEmail);
+  schema.static('findProfiles', findProfiles);
+
+  schema.virtual('hasprofiles').get(hasProfiles);
+  schema.virtual('hasprofiles').get(hasManyProfiles);
 
   return schema;
 

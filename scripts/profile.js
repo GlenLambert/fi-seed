@@ -33,6 +33,8 @@ mongoose.model('user', userSchema);
 const Profile = mongoose.model('profile');
 const User = mongoose.model('user');
 
+const testId = '591c71390f068261884ac4de';
+
 function smartLog() {
   for (let i = 0; i < arguments.length; i++) {
     let argument = arguments[i];
@@ -59,8 +61,9 @@ function randomName(gender, middle) {
 const rdmEmail = randomAlpha(10) + '@mailinator.com';
 const rdmName = randomName();
 
-connectionScript().then(() => {
-  //smartLog('\nDoing stuff...');
+connectionScript()
+.then(() => {
+  smartLog('\nDoing stuff...');
 
   return User.create({
     name: rdmName,
@@ -81,10 +84,20 @@ connectionScript().then(() => {
   })
 
   .then((profile) => {
-    //smartLog('hash: ', profile.hash);
-    //smartLog('user name: ', profile.user.name);
+    smartLog('hash: ', profile.hash);
+    smartLog('user name: ', profile.user.name);
+    smartLog('user: ', profile.user);
+    return profile;
+  })
+
+  .then((res) => {
+    return User.findProfiles(res.user._id)//testId)
+    .then((raw) => {
+      console.log('findProfiles: ', raw);
+    });
   });
 })
+
 .catch((err) => {
-  smartLog(err);
+  console.log(err);
 });

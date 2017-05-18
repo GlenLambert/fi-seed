@@ -33,7 +33,7 @@ module.exports = (Schema) => {
   function preValidateHash(next) {
     if (this.isNew) {
       this.hash = this.email + '@' + this.user;
-      console.dir(this, {colors: true, depth: 1});
+      //console.dir(this, {colors: true, depth: 1});
     }
     next();
   }
@@ -49,8 +49,12 @@ module.exports = (Schema) => {
   }
 
   function preUpdate(next) {
-    console.dir(this, {colors: true, depth: 1});
+    //console.dir(this, {colors: true, depth: 1});
     next();
+  }
+
+  function findAllByUser(userId) {
+    return this.find().where('user').equals(userId);
   }
 
   schema.path('email').validate((val) => {
@@ -62,6 +66,8 @@ module.exports = (Schema) => {
   schema.pre('findOneAndUpdate', preUpdate);
 
   schema.post('save', postSaveUserCount);
+
+  schema.static('findAllByUser', findAllByUser);
 
   return schema;
 };
