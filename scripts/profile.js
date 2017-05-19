@@ -33,8 +33,6 @@ mongoose.model('user', userSchema);
 const Profile = mongoose.model('profile');
 const User = mongoose.model('user');
 
-const testId = '591c71390f068261884ac4de';
-
 function smartLog() {
   for (let i = 0; i < arguments.length; i++) {
     let argument = arguments[i];
@@ -63,7 +61,7 @@ const rdmName = randomName();
 
 connectionScript()
 .then(() => {
-  smartLog('\nDoing stuff...');
+  console.log('\nDoing stuff...');
 
   return User.create({
     name: rdmName,
@@ -73,28 +71,33 @@ connectionScript()
   })
 
   .then((user) => {
+    console.log(user.hasProfiles);
     return Profile.create({
       user: user._id,
       email: rdmEmail
     });
   })
 
-  .then((res) => {
-    return Profile.findOne().where('user').equals(res.user).populate('user');
+  .then((profile) => {
+    return Profile.create({
+      user: profile.user,
+      email: 'ai' + rdmEmail
+    });
+  })
+
+  .then((profile) => {
+    return Profile.findOne().where('user').equals(profile.user).populate('user');
   })
 
   .then((profile) => {
     smartLog('hash: ', profile.hash);
     smartLog('user name: ', profile.user.name);
-    smartLog('user: ', profile.user);
-    return profile;
+    return User.findProfiles(profile.user._id);
+    //smartLog('user: ', profile.user);
   })
 
-  .then((res) => {
-    return User.findProfiles(res.user._id)//testId)
-    .then((raw) => {
-      console.log('findProfiles: ', raw);
-    });
+  .then((profiles) => {
+    smartLog('whateva: ', profiles);
   });
 })
 

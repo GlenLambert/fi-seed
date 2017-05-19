@@ -53,10 +53,6 @@ module.exports = (Schema) => {
     next();
   }
 
-  function findAllByUser(userId) {
-    return this.find().where('user').equals(userId);
-  }
-
   schema.path('email').validate((val) => {
     return is.email(val);
   }, ':c el email está malo');
@@ -66,8 +62,6 @@ module.exports = (Schema) => {
   schema.pre('findOneAndUpdate', preUpdate);
 
   schema.post('save', postSaveUserCount);
-
-  schema.static('findAllByUser', findAllByUser);
 
   return schema;
 };

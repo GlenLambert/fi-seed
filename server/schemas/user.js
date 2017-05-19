@@ -113,23 +113,24 @@ module.exports = (Schema) => {
   }
 
   function findProfiles(user) {
-    return this.model('profile').findAllByUser(user).populate('profiles'); //TOASK: is this shit working? does it go here?? HALP!! (CONTEXT CONFUSION)
+    return this.model('profile').where('user').equals(user);
   }
 
   function hasProfiles() {
-    if(findProfiles().count()) {
-      return true;
-    } else {
-      return false;
-    }
+    return !!this.profilesCount;
+    // if(findProfiles().count()) {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
   }
 
   function hasManyProfiles() {
-    if(findProfiles().count() > 1) {
-      return true;
-    } else {
-      return false;
-    }
+    // if(findProfiles().count() > 1) {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
   }
 
   /**
@@ -152,8 +153,8 @@ module.exports = (Schema) => {
   schema.static('findByEmail', findByEmail);
   schema.static('findProfiles', findProfiles);
 
-  schema.virtual('hasprofiles').get(hasProfiles);     //WRONGLY CODED
-  schema.virtual('hasprofiles').get(hasManyProfiles); //BAD BAD SHIT
+  schema.virtual('hasProfiles').get(hasProfiles);     //WRONGLY CODED
+  schema.virtual('hasManyProfiles').get(hasManyProfiles); //BAD BAD SHIT
 
   return schema;
 
