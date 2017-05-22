@@ -107,30 +107,37 @@ module.exports = (Schema) => {
     }).catch(next);
   }
 
+  /**
+   * Hook that will run before updating **SEE: schema.pre()
+   * Doesn't really do anything at the moment
+   */
   function preUpdate(next) {
     //console.dir(this, {colors: true, depth: 1});
     next();
   }
 
+  /**
+   * Static function (just an exposed function that's part of the model)
+   * Returns an array of all the profiles linked to a single given user ID
+   */
   function findProfiles(user) {
     return this.model('profile').where('user').equals(user);
   }
 
+  /**
+   * Virtual field that returns true or false depending on the existence of profiles associated to the user
+   * (SEE: schema.virtual)
+   */
   function hasProfiles() {
     return !!this.profilesCount;
-    // if(findProfiles().count()) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
   }
 
+  /**
+   * Virtual field that returns true if there are more than 1 profiles associated to the user
+   * (SEE: schema.virtual)
+   */
   function hasManyProfiles() {
-    // if(findProfiles().count() > 1) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
+    return this.profilesCount > 1;
   }
 
   /**
@@ -151,10 +158,10 @@ module.exports = (Schema) => {
   schema.pre('update', preUpdate);
 
   schema.static('findByEmail', findByEmail);
-  schema.static('findProfiles', findProfiles);
+  schema.static('findProfiles', findProfiles); //This line exposes the static 'findProfiles' method
 
-  schema.virtual('hasProfiles').get(hasProfiles);     //WRONGLY CODED
-  schema.virtual('hasManyProfiles').get(hasManyProfiles); //BAD BAD SHIT
+  schema.virtual('hasProfiles').get(hasProfiles); //This line sets a 'virtual' path for the model that takes the returned value of the 'hasProfiles' function
+  schema.virtual('hasManyProfiles').get(hasManyProfiles);  //This line sets another 'virtual' path that takes the returned value of the 'hasManyProfiles' function
 
   return schema;
 

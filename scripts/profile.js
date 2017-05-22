@@ -74,30 +74,130 @@ connectionScript()
     console.log(user.hasProfiles);
     return Profile.create({
       user: user._id,
-      email: rdmEmail
+      email: rdmEmail,
+      functions: [
+        {
+          name: 'Cortar pasto',
+          description: 'Cortar el pasto con mucho cuidado'
+        },
+        {
+          name: 'Regar',
+          description: 'Distribuir agua sobre la tierra'
+        }
+      ]
     });
   })
 
+  /**
+   * Uncomment the following block to create another profile associated to the same user.
+   */
+  // .then((profile) => {
+  //   return Profile.create({
+  //     user: profile.user,
+  //     email: 'ai' + rdmEmail
+  //   });
+  // })
+
   .then((profile) => {
-    return Profile.create({
-      user: profile.user,
-      email: 'ai' + rdmEmail
-    });
+    return Profile.findOne().where('user').equals(profile.user).populate('user'); //The populate() method assigns the returned document to the 'user' path of the profile.
   })
 
   .then((profile) => {
-    return Profile.findOne().where('user').equals(profile.user).populate('user');
+
+    var QUERY = {
+      user: profile.user
+    };
+
+    var UPDATE = {
+      $push: {
+        functions: {
+          name: 'Pushear función',
+          description: 'Agregar una función al array de funciones'
+        }
+      }
+    };
+
+    var OPTIONS = {
+      new: true
+    };
+
+    return Profile.findOneAndUpdate(QUERY, UPDATE, OPTIONS);
   })
 
   .then((profile) => {
     smartLog('hash: ', profile.hash);
     smartLog('user name: ', profile.user.name);
-    return User.findProfiles(profile.user._id);
-    //smartLog('user: ', profile.user);
+    smartLog('user has profiles', profile.user.hasProfiles);
+    smartLog('Upon creation, is profile enabled??: ', profile.isEnabled);
+    console.log('Profile functions so far:', profile.functions);
+    return profile;
   })
 
-  .then((profiles) => {
-    smartLog('whateva: ', profiles);
+  .then((profile) => {
+
+    var QUERY = {
+      user: profile.user
+    };
+
+    var UPDATE = {
+      $pull: {
+        functions: {
+          name: 'Regar'
+        }
+      }
+    };
+
+    var OPTIONS = {
+      new: true
+    };
+
+    return Profile.findOneAndUpdate(QUERY, UPDATE, OPTIONS);
+  })
+
+  .then((profile) => {
+    console.log('\nProfile functions after pull:', profile.functions);
+
+    var QUERY = {
+      user: profile.user
+    };
+
+    var UPDATE = {
+      $set: {
+        disabledAt: new Date
+      }
+    };
+
+    var OPTIONS = {
+      new: true
+    };
+
+    console.log('Profile will be disabled...............');
+    return Profile.findOneAndUpdate(QUERY, UPDATE, OPTIONS);
+  })
+
+  .then((profile) => {
+    console.log('Profile Enabled:', profile.isEnabled);
+
+    var QUERY = {
+      user: profile.user
+    };
+
+    var UPDATE = {
+      $unset: {
+        disabledAt: ''
+      }
+    };
+
+    var OPTIONS = {
+      new: true
+    };
+
+    console.log('Profile will be enabled again............');
+    return Profile.findOneAndUpdate(QUERY, UPDATE, OPTIONS);
+  })
+
+  .then((profile) => {
+    console.log('Profile Enabled:', profile.isEnabled);
   });
 })
 
