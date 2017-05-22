@@ -198,6 +198,26 @@ connectionScript()
 
   .then((profile) => {
     console.log('Profile Enabled:', profile.isEnabled);
+
+    var PROFILE_FUNCTION_ID = profile.functions[0]._id;
+
+    return Profile.findOneAndUpdate(
+      {
+        _id: profile._id
+      },
+
+      {
+        functions: {
+          $elemMatch: {
+            _id:PROFILE_FUNCTION_ID
+          }
+        }
+      }
+    );
+  })
+
+  .then((profile) => {
+    console.log('ALIWRUJKADSFVDKFLVMASDL-FV', profile);
   });
 })
 
