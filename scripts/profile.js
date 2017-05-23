@@ -99,7 +99,7 @@ connectionScript()
   // })
 
   .then((profile) => {
-    return Profile.findOne().where('user').equals(profile.user).populate('user'); //The populate() method assigns the returned document to the 'user' path of the profile.
+    return Profile.findOne().where('user').equals(profile.user).populate('user'); //The populate() method assigns the query matching document to the 'user' path of the profile.
   })
 
   .then((profile) => {
@@ -201,23 +201,25 @@ connectionScript()
 
     var PROFILE_FUNCTION_ID = profile.functions[0]._id;
 
-    return Profile.findOneAndUpdate(
-      {
-        _id: profile._id
-      },
+    var QUERY = {
+      'functions._id': PROFILE_FUNCTION_ID
+    };
 
-      {
-        functions: {
-          $elemMatch: {
-            _id:PROFILE_FUNCTION_ID
-          }
+    var UPDATE = {
+      $set: {
+          "functions.$.name" : 'Cut the grass'
         }
-      }
-    );
+    };
+
+    var OPTIONS = {
+      new: true
+    };
+
+    return Profile.findOneAndUpdate(QUERY, UPDATE, OPTIONS);
   })
 
   .then((profile) => {
-    console.log('ALIWRUJKADSFVDKFLVMASDL-FV', profile);
+    console.log('UPDATE RESULT:', profile);
   });
 })
 
