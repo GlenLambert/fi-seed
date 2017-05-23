@@ -4,8 +4,6 @@ const mongoose = require('mongoose');
 const CONSTS = require('fi-consts');
 const is = require('fi-is');
 
-
-
 module.exports = (Schema) => {
 
   const PROFILE_FUNCTION = new Schema({
@@ -16,6 +14,22 @@ module.exports = (Schema) => {
 
     description: {
       type: String,
+      required: true
+    }
+  });
+
+  const PROFILE_STATUS_CHANGE = new Schema({
+    status: {
+      type: String,
+      required: true,
+      enum: [
+        CONSTS.STATUSES.ENABLED,
+        CONSTS.STATUSES.DISABLED
+      ]
+    },
+
+    date: {
+      type: Date,
       required: true
     }
   });
@@ -67,9 +81,9 @@ module.exports = (Schema) => {
 
     disabledAt: Date,
 
-    functions: [PROFILE_FUNCTION]
+    functions: [PROFILE_FUNCTION],
 
-    statusHistory
+    statusHistory: [PROFILE_STATUS_CHANGE]
 
   }, {
 
@@ -94,13 +108,20 @@ module.exports = (Schema) => {
    * Increases the 'profilesCount' user model attribute for the associated user document by 1
    */
   function postSaveUserCount(doc, next) {
-    mongoose.model('user').update({_id: doc.user}, { $inc: {profilesCount: 1}})
-    .then(() => {
-      next();
-    })
-    .catch((err) => {
-      next(err);
-    });
+    mongoose.model('user').update(
+      {
+        _id: doc.user
+      }, {
+        $inc: {
+          profilesCount: 1
+        }
+      })
+      .then(() => {
+        next();
+      })
+      .catch((err) => {
+        next(err);
+      });
   }
 
   /**
@@ -108,6 +129,31 @@ module.exports = (Schema) => {
    * Pushes a history object into the statusHistory array, represents historical changes on enabling and disabling
    */
   function preUpdate(next) {
+    var update = this._update;
+
+    var statusHistory = {
+      date: new Date()
+    };
+
+    var updateSet = {
+      $push: {
+        statusHistory
+      }
+    };
+
+    if (update && update.$set) {
+      if (update.$set.disabledAt) {
+        statusHistory.status = CONSTS.STATUSES.DISABLED;
+        this.update({}, updateSet);
+      }
+    }
+
+    if (update && update.$unset) {
+      if (update.$unset.disabledAt) {
+        statusHistory.status = CONSTS.STATUSES.ENABLED;
+        this.update({}, updateSet);
+      }
+    }
 
     next();
   }

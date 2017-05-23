@@ -237,7 +237,7 @@ connectionScript().then(() => {
     })
 
     .then((profile) => {
-      console.log('UPDATE RESULT:', profile); //Prints out relevant info from last promise's result
+      smartLog('\nUPDATE RESULT\n History:', profile.statusHistory.toObject()); //Prints out relevant info from last promise's result
 
       process.exit(0);
     });
