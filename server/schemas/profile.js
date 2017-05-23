@@ -69,6 +69,8 @@ module.exports = (Schema) => {
 
     functions: [PROFILE_FUNCTION]
 
+    statusHistory
+
   }, {
 
     timestamps: true
@@ -103,10 +105,10 @@ module.exports = (Schema) => {
 
   /**
    * Hook that will run before updating **SEE: schema.pre()
-   * Doesn't really do anything at the moment
+   * Pushes a history object into the statusHistory array, represents historical changes on enabling and disabling
    */
   function preUpdate(next) {
-    //console.dir(this, {colors: true, depth: 1});
+
     next();
   }
 

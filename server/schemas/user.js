@@ -2,7 +2,6 @@
 
 const CONSTS = require('fi-consts');
 
-const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const is = require('fi-is');
 

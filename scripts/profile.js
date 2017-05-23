@@ -48,8 +48,7 @@ function smartLog() {
 }
 
 /**
- *
- * @param {*} length
+ * Generates a random word
  */
 function randomAlpha(length) {
   WORD.length = length || WORD.length;
@@ -57,9 +56,7 @@ function randomAlpha(length) {
 }
 
 /**
- *
- * @param {*} gender
- * @param {*} middle
+ * Generates a random human name.
  */
 function randomName(gender, middle) {
   return chance.name({
@@ -68,6 +65,9 @@ function randomName(gender, middle) {
   });
 }
 
+/**
+ * Main script, connects to the DB and THEN heaps of fancy things happen...
+ */
 connectionScript().then(() => {
   console.log('\nDoing stuff...');
 
@@ -86,10 +86,16 @@ connectionScript().then(() => {
     gender: 'GENDER.MALE'
   };
 
+  /**
+   * Create a user
+   */
   return User.create(data)
 
+    /**
+     * Creates a profile associated to the recently created user
+     */
     .then((user) => {
-      console.log(user.hasProfiles);
+      console.log(user.hasProfiles); //Logs value of virtual field 'hasProfiles' (SEE user Schema)
 
       var data = {
         user: user._id,
@@ -122,7 +128,13 @@ connectionScript().then(() => {
       //The populate() method assigns the query matching document to the 'user' path of the profile.
       .populate('user'))
 
+    /**
+     * Push a new function into the profile's functions array using the $push operator
+     */
     .then((profile) => {
+      smartLog('hash: ', profile.hash);
+      smartLog('user name: ', profile.user.name);
+      smartLog('user has profiles', profile.user.hasProfiles); //Logs populated 'user' fields
 
       var query = {
         user: profile.user
@@ -140,16 +152,13 @@ connectionScript().then(() => {
       return Profile.findOneAndUpdate(query, update, OPTIONS);
     })
 
+    /**
+     * Delete a function from the profile's function array using the $pull operator
+     */
     .then((profile) => {
-      smartLog('hash: ', profile.hash);
-      smartLog('user name: ', profile.user.name);
-      smartLog('user has profiles', profile.user.hasProfiles);
-      smartLog('Upon creation, is profile enabled??: ', profile.isEnabled);
-      console.log('Profile functions so far:', profile.functions);
-      return profile;
-    })
+      smartLog('Upon creation, is profile enabled??: ', profile.isEnabled); //Prints out the value of the virtual attribute 'isEnabled' (SEE profile Schema)
 
-    .then((profile) => {
+      console.log('Profile functions so far:', profile.functions);  //Prints out functions array before pull
 
       var query = {
         user: profile.user
@@ -166,8 +175,11 @@ connectionScript().then(() => {
       return Profile.findOneAndUpdate(query, update, OPTIONS);
     })
 
+    /**
+     * 'Disable profile' by setting its 'disabledAt' attribute with the current date
+     */
     .then((profile) => {
-      console.log('\nProfile functions after pull:', profile.functions);
+      console.log('\nProfile functions after pull:', profile.functions); //Prints out relevant info from last promise's result
 
       var query = {
         user: profile.user
@@ -184,8 +196,11 @@ connectionScript().then(() => {
       return Profile.findOneAndUpdate(query, update, OPTIONS);
     })
 
+    /**
+     * 'Enable profile' by unsetting its 'disabledAt' attribute
+     */
     .then((profile) => {
-      console.log('Profile Enabled:', profile.isEnabled);
+      console.log('Profile Enabled:', profile.isEnabled); //Prints out relevant info from last promise's result
 
       var query = {
         user: profile.user
@@ -193,7 +208,7 @@ connectionScript().then(() => {
 
       var update = {
         $unset: {
-          disabledAt: 1
+          disabledAt: 1 //Given the truthy value of a non-zero number, this line basically assigns 'true' to the attribute to be unset with the $unset operator
         }
       };
 
@@ -202,8 +217,11 @@ connectionScript().then(() => {
       return Profile.findOneAndUpdate(query, update, OPTIONS);
     })
 
+    /**
+     * Update a single profile function by its _id attribute
+     */
     .then((profile) => {
-      console.log('Profile Enabled:', profile.isEnabled);
+      console.log('Profile Enabled:', profile.isEnabled); //Prints out relevant info from last promise's result
 
       var query = {
         'functions._id': profile.functions[0]._id
@@ -219,7 +237,7 @@ connectionScript().then(() => {
     })
 
     .then((profile) => {
-      console.log('UPDATE RESULT:', profile);
+      console.log('UPDATE RESULT:', profile); //Prints out relevant info from last promise's result
 
       process.exit(0);
     });
