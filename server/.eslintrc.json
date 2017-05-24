@@ -4,6 +4,7 @@
     "component": false,
     "config": false,
     "panic": false,
+    "partial": false,
     "__basedir": false,
     "__serverdir": false
   }

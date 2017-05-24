@@ -6,6 +6,8 @@ const is = require('fi-is');
 
 module.exports = (Schema) => {
 
+  const OPTIONS = partial('options');
+
   const PROFILE_FUNCTION = new Schema({
     name: {
       type: String,
@@ -34,8 +36,9 @@ module.exports = (Schema) => {
     }
   });
 
-  const schema = new Schema({
+  var schema = new Schema({}, OPTIONS);
 
+  schema.add({
     hash: {
       type: String,
       unique: true,
@@ -85,10 +88,6 @@ module.exports = (Schema) => {
 
     statusHistory: [PROFILE_STATUS_CHANGE]
 
-  }, {
-
-    timestamps: true
-
   });
 
   /**
@@ -108,9 +107,8 @@ module.exports = (Schema) => {
    * Increases the 'profilesCount' user model attribute for the associated user document by 1
    */
   function postSaveUserCount(doc, next) {
-    mongoose.model('user').update(
-      {
-        _id: doc.user
+    mongoose.model('user').update({
+      _id: doc.user
       }, {
         $inc: {
           profilesCount: 1
